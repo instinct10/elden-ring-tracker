@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elden Ring | Boss Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #cda052;
+            --dark-gold: #85642a;
+            --bg: #0d0d0d;
+            --card-bg: rgba(18, 18, 18, 0.95);
+            --red: #a30000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% 30%, #1a1510 0%, var(--bg) 70%), 
+                              url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            color: #e0e0e0;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .cinzel {
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 20px 60px 20px;
+        }
+
+        /* Логотип игры */
+        .game-logo-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .game-logo {
+            width: 100%;
+            max-width: 350px;
+            filter: drop-shadow(0 0 15px rgba(205, 160, 82, 0.3));
+        }
+
+        /* Шапка профиля */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(205, 160, 82, 0.15);
+            padding-bottom: 30px;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 25px rgba(205, 160, 82, 0.35);
+        }
+
+        .avatar-frame {
+            position: absolute;
+            top: -8px; left: -8px; right: -8px; bottom: -8px;
+            border: 1px solid var(--dark-gold);
+            border-radius: 50%;
+            animation: rotate 15s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .player-name {
+            font-size: 2rem;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(205, 160, 82, 0.4);
+            margin-bottom: 5px;
+        }
+
+        .stats-summary {
+            font-size: 0.95rem;
+            color: #aaa;
+            letter-spacing: 1px;
+            background: rgba(205, 160, 82, 0.05);
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(205, 160, 82, 0.15);
+        }
+
+        .stats-summary strong {
+            color: var(--gold);
+        }
+
+        /* Панель сортировки */
+        .controls-panel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .controls-label {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
+        .sort-btn {
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid #444;
+            color: #aaa;
+            padding: 8px 16px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            border-radius: 4px;
+        }
+
+        .sort-btn:hover {
+            border-color: var(--gold);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(205, 160, 82, 0.2);
+        }
+
+        .sort-btn.active {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(205, 160, 82, 0.1);
+            box-shadow: 0 0 15px rgba(205, 160, 82, 0.3);
+            font-weight: bold;
+        }
+
+        /* Сетка боссов */
+        .boss-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        /* Карточка босса */
+        .boss-card {
+            background: var(--card-bg);
+            border: 1px solid #222;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .boss-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 5px 20px rgba(205, 160, 82, 0.15);
+        }
+
+        .boss-link-wrapper {
+            display: block;
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .boss-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(30%) brightness(0.7);
+            transition: transform 0.5s ease, filter 0.3s ease;
+        }
+
+        .boss-card:hover .boss-img {
+            filter: grayscale(0%) brightness(0.95);
+            transform: scale(1.05);
+        }
+
+        .boss-info {
+            padding: 20px;
+            border-top: 1px solid rgba(205, 160, 82, 0.25);
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .boss-title-link {
+            transition: color 0.3s;
+        }
+
+        .boss-title-link:hover {
+            color: var(--gold);
+        }
+
+        .boss-name {
+            font-size: 1.15rem;
+            margin-bottom: 12px;
+color: #fff;
+            line-height: 1.3;
+        }
+
+        /* Статус ПОБЕЖДЕН */
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .status-defeated {
+            color: #ff3333;
+            border: 1px solid #ff3333;
+            background: rgba(255, 51, 51, 0.05);
+        }
+
+        .status-fighting {
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            background: rgba(205, 160, 82, 0.05);
+        }
+
+        /* Список попыток игроков */
+        .attempts-list {
+            margin-top: auto;
+            border-top: 1px solid #222;
+            padding-top: 12px;
+        }
+
+        .attempt-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            color: #999;
+        }
+
+        .attempt-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .attempt-row.primary {
+            color: #e0e0e0;
+        }
+
+        .attempt-row.primary .player-attempts-num {
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        /* Эффект надписи сверху */
+        .victory-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(139, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .boss-card.is-defeated .victory-overlay {
+            opacity: 1;
+        }
+
+        .victory-text {
+            color: #ff2a2a;
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            font-weight: bold;
+            text-shadow: 0 0 15px black;
+            border-top: 2px solid #ff2a2a;
+            border-bottom: 2px solid #ff2a2a;
+            padding: 3px 15px;
+            letter-spacing: 3px;
+        }
+
+        footer {
+            margin-top: 80px;
+            text-align: center;
+            color: #555;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 600px) {
+            .player-name { font-size: 1.6rem; }
+            .boss-grid { grid-template-columns: 1fr; }
+            .game-logo { max-width: 260px; }
+            .controls-panel { gap: 8px; }
+            .sort-btn { padding: 6px 12px; font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Логотип игры -->
+        <div class="game-logo-container">
+            <img src="img/Elden_Ring_logo.webp" alt="Elden Ring Logo" class="game-logo">
+        </div>
+
+        <!-- Блок профиля -->
+        <header class="profile-header">
+            <div class="avatar-wrapper">
+                <div class="avatar-frame"></div>
+                <img src="img/avatar.jpg" alt="Player Avatar" class="avatar">
+            </div>
+            <h1 class="player-name">Nazar (Isshin Killer)</h1>
+            <div class="stats-summary" id="stats-summary">
+                Загрузка статистики...
+            </div>
+        </header>
+
+        <!-- ПАНЕЛЬ СОРТИРОВКИ -->
+        <div class="controls-panel">
+            <span class="controls-label">Сортировка:</span>
+            <button class="sort-btn active" onclick="changeSort('default', this)">По порядку</button>
+            <button class="sort-btn" onclick="changeSort('desc', this)">Сначала сложные (▲)</button>
+            <button class="sort-btn" onclick="changeSort('asc', this)">Сначала легкие (▼)</button>
+        </div>
+
+        <!-- Динамическая сетка боссов -->
+        <main class="boss-grid" id="boss-grid">
+            <!-- Сюда JS вставит карточки боссов -->
+        </main>
+
+        <footer>
+            <p>&copy; Elden Ring Boss Tracker. May grace guide thee, Tarnished.</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- БАЗА ДАННЫХ САЙТА ---
+        const MAIN_PLAYER = "Nazar (Isshin Killer) Попыток: ";
+
+        const bossesData = [
+            {
+                name: "Маргит, Ужасное Знамение",
+                img: "img/Margit the Fell Omen.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Маргит,_Ужасное_Знамение",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 19//,
+                    //"Друг (Игорь)": 24
+                }
+            },
+            {
+                name: "Margit, the Fell Omen",
+                img: "img/Mohg Lord of Blood.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Мог_Повелитель_Крови",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 13
+                }
+            },
+            {
+                name: "Погребальная птица (Вершина Великанов)",
+                img: "img/Death Rite Bird.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Мог_Повелитель_Крови",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 10
+                }
+            },
+            {
+                name: "Рыцарь Горнила",
+                img: "img/Crucible Knight.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Рыцарь_Горнила",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 8
+                }
+            },
+            {
+                name: "Рикард, богохульный владыка",
+                img: "img/Rykard, Lord of Blasphemy.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Рикард,_богохульный_владыка",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 7
+                }
+            },
+            {
+                name: "Рыцарь-ищейка Дарривил",
+                img: "img/Bloodhound Knight Darriwil.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Рыцарь-ищейка_Дарривил",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 5
+                }
+            },
+            {
+                name: "Годрик Сторукий",
+                img: "img/Godrick The Grafted.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Годрик_Сторукий",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 5
+                }
+            },
+            {
+                name: "Радан Бич Звёзд",
+                img: "img/Starscourge Radahn.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Радан_Бич_Звёзд",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 5
+                }
+            },
+            {
+                name: "Дух величавого предка",
+                img: "img/Regal Ancestor Spirit.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Дух_величавого_предка",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 5
+                }
+            },
+            {
+                name: "Эгхил, крылатый дракон",
+                img: "img/Flying Dragon Agheel.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Эгхил,_крылатый_дракон",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 4
+                }
+            },
+            {
+                name: "Астель, Рождённый Бездной",
+                img: "img/Astel, Naturalborn of the Void.avif",
+                link: "https://eldenring.fandom.com/ru/wiki/Астель,_Рождённый_Бездной",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 4
+                }
+            },
+            {
+                name: "Командир Найлл",
+                img: "img/Commander Niall.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Командир_Найлл",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 4
+                }
+            },
+            {
+                name: "Морготт, король знамений",
+                img: "img/Morgott, The Omen King.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Морготт,_король_знамений",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 3
+                }
+            },
+            {
+                name: "Взрослый зверь Падающей звезды",
+                img: "img/Full-Grown Fallingstar Beast.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Взрослый_зверь_Падающей_звезды",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 3
+                }
+            },
+            {
+                name: "Борелис Леденящий Туман",
+                img: "img/Borealis, the Freezing Fog.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Борелис_Леденящий_Туман",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 3
+                }
+            },
+            {
+                name: "Нериюс, Окровавленный палец",
+                img: "img/Bloody Finger Nerijus.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Нериюс,_Окровавленный_палец",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 2
+                }
+            },
+            {
+                name: "Древний герой Замора",
+                img: "img/Ancient Hero of Zamor.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Древний_герой_Замора",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 2
+                }
+            },
+            {
+                name: "Лоретта, королевский рыцарь",
+                img: "img/Royal Knight Loretta.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Лоретта,_королевский_рыцарь",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 2
+                }
+            },
+            {
+                name: "Драконий Страж Древа",
+                img: "img/Draconic Tree Sentinel.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Драконий_Страж_Древа",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 2
+                }
+            },
+            {
+                name: "Аристократ божественной кожи",
+                img: "img/Godskin Noble.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Аристократ_божественной_кожи",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 2
+                }
+            },
+            {
+                name: "Элемер из Шипов",
+                img: "img/Elemer of the Briar.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Элемер_из_Шипов",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 2
+                }
+            },
+            {
+                name: "Бастард Леонин",
+                img: "img/Leonine Misbegotten.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Бастард_Леонин",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 1
+                }
+            },
+            {
+                name: "Лоскутик",
+                img: "img/Patches.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Лоскутик",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 1
+                }
+            },
+            {
+                name: "Предводитель полулюдей",
+                img: "img/Demi-Human Chief.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Предводитель_полулюдей",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 1
+                }
+            },
+            {
+                name: "Тролль-камнекоп",
+                img: "img/Stonedigger Troll.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Тролль-камнекоп",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 1
+                }
+            },
+            {
+                name: "Королева Реннала Полнолунная",
+                img: "img/Rennala, Queen of the Full Moon.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Королева_Реннала_Полнолунная",
+                defeated: true,
+                attempts: {
+                    [MAIN_PLAYER]: 1
+                }
+            },
+            {
+                name: "Маления, Клинок Микеллы",
+                img: "img/Malenia, Blade of Miquella.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Маления,_Клинок_Микеллы",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Огненный великан",
+                img: "img/Fire Giant.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Огненный_великан",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Дракон-лич Фортисакс",
+                img: "img/Lichdragon Fortissax.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Дракон-лич_Фортисакс",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Владыка драконов Пласидусакс",
+                img: "img/Dragonlord Placidusax.avif",
+                link: "https://eldenring.fandom.com/ru/wiki/Владыка_драконов_Пласидусакс",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Маликет Чёрный Клинок",
+                img: "img/Maliketh, The Black Blade.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Маликет_Чёрный_Клинок",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Годфри, первый повелитель Элдена",
+                img: "img/Godfrey, First Elden Lord.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Годфри,_первый_повелитель_Элдена",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Радагон из Золотого порядка",
+                img: "img/Radagon of the Golden Order.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Радагон_из_Золотого_порядка",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Зверь Элдена",
+                img: "img/Elden Beast.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Зверь_Элдена",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Бейл Ужасный",
+                img: "img/Bayle The Dread.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Бейл_Ужасный",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Гниющий рыцарь",
+                img: "img/Putrescent Knight.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Гниющий_рыцарь",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Мидра, Владыка Яростного Пламени",
+                img: "img/Midra, Lord of Frenzied Flame.avif",
+                link: "https://eldenring.fandom.com/ru/wiki/Мидра,_Владыка_Яростного_Пламени",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Ромина, Святая Цветочных Бутонов",
+                img: "img/Romina, Saint of the Bud.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Ромина,_Святая_Цветочных_Бутонов",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Священный танцующий лев",
+                img: "img/Divine Beast Dancing Lion.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Священный_танцующий_лев",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Золотой гиппопотам",
+                img: "img/Golden Hippopotamus.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Золотой_гиппопотам",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Командующий Гай",
+                img: "img/Commander Gaius.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Командующий_Гай",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Матерь Пальцев Метир",
+                img: "img/Metyr, Mother of Fingers.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Матерь_Пальцев_Метир",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Мессмер Колосажатель",
+                img: "img/Messmer the Impaler.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Мессмер_Колосажатель",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Будущий консорт Радан",
+                img: "img/Promised Consort Radahn.jpg",
+                link: "https://eldenring.fandom.com/ru/wiki/Будущий_консорт_Радан",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Реллана, Рыцарь Двойной Луны",
+                img: "img/Rellana, Twin Moon Knight.png",
+                link: "https://eldenring.fandom.com/ru/wiki/Реллана,_Рыцарь_Двойной_Луны",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Граф Имир, матерь Пальцев",
+                img: "img/Count Ymir, Mother of Fingers.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Граф_Имир,_матерь_Пальцев",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Дракон смерти",
+                img: "img/Ghostflame Dragon.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Дракон_смерти",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: "Воплощение Древа Упадка",
+                img: "img/Scadutree Avatar.webp",
+                link: "https://eldenring.fandom.com/ru/wiki/Воплощение_Древа_Упадка",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            },
+            {
+                name: " ",
+                img: "img/ ",
+                link: " ",
+                defeated: false,
+                attempts: {
+                    [MAIN_PLAYER]: 0
+                }
+            }
+        ];
+
+        // Текущий режим сортировки ('default', 'asc', 'desc')
+        let currentSortMode = 'default';
+
+        // Инициализация при загрузке
+        window.addEventListener('DOMContentLoaded', () => {
+            calculateStats();
+            renderBosses();
+        });
+
+        // Функция расчета глобальной статистики (вызывается один раз)
+        function calculateStats() {
+            const statsSummary = document.getElementById('stats-summary');
+            let totalDefeated = 0;
+            let totalAttempts = 0;
+
+            bossesData.forEach(boss => {
+                if (boss.defeated) totalDefeated++;
+                if (boss.attempts[MAIN_PLAYER]) {
+                    totalAttempts += boss.attempts[MAIN_PLAYER];
+                }
+            });
+
+            statsSummary.innerHTML = `Побеждено боссов: <strong>${totalDefeated} / ${bossesData.length}</strong> | Всего попыток: <strong>${totalAttempts}</strong>`;
+        }
+
+        // Переключение сортировки по клику на кнопку
+        function changeSort(mode, element) {
+            // Убираем класс active у всех кнопок
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            // Добавляем текущей
+            element.classList.add('active');
+            
+            currentSortMode = mode;
+            renderBosses(); // Перерисовываем список
+        }
+
+        // Функция отрисовки боссов на экране с учетом сортировки
+        function renderBosses() {
+            const bossGrid= document.getElementById('boss-grid');
+            bossGrid.innerHTML = ''; // Очищаем
+
+            // Создаем копию массива, чтобы не сломать оригинальный порядок в базе
+            let sortedList = [...bossesData];
+
+            if (currentSortMode === 'desc') {
+                // Сортировка: Сначала сложные (больше попыток у MAIN_PLAYER -> меньше)
+                sortedList.sort((a, b) => {
+                    const attA = a.attempts[MAIN_PLAYER] || 0;
+                    const attB = b.attempts[MAIN_PLAYER] || 0;
+                    return attB - attA;
+                });
+            } else if (currentSortMode === 'asc') {
+                // Сортировка: Сначала легкие (меньше попыток у MAIN_PLAYER -> больше)
+                sortedList.sort((a, b) => {
+                    const attA = a.attempts[MAIN_PLAYER] || 0;
+                    const attB = b.attempts[MAIN_PLAYER] || 0;
+                    return attA - attB;
+                });
+            }
+
+            // Рендерим отсортированный список
+            sortedList.forEach(boss => {
+                const card = document.createElement('div');
+                card.className = `boss-card ${boss.defeated ? 'is-defeated' : ''}`;
+
+                let attemptsHTML = '';
+                for (const [player, count] of Object.entries(boss.attempts)) {
+                    const isPrimary = player === MAIN_PLAYER ? 'primary' : '';
+                    attemptsHTML += `
+                        <div class="attempt-row ${isPrimary}">
+                            <span>${player}:</span>
+                            <span class="player-attempts-num">${count}</span>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <a href="${boss.link}" target="_blank" class="boss-link-wrapper" title="Узнать больше о ${boss.name}">
+                        <div class="victory-overlay">
+                            <div class="victory-text">FOE VANQUISHED</div>
+                        </div>
+                        <img src="${boss.img}" alt="${boss.name}" class="boss-img">
+                    </a>
+                    <div class="boss-info">
+                        <div class="status-header">
+                            <a href="${boss.link}" target="_blank" class="boss-title-link">
+                                <h3 class="boss-name">${boss.name}</h3>
+                            </a>
+                            <span class="status-badge ${boss.defeated ? 'status-defeated' : 'status-fighting'}">
+                                ${boss.defeated ? 'Побежден' : 'В бою'}
+                            </span>
+                        </div>
+                        <div class="attempts-list">
+                            ${attemptsHTML}
+                        </div>
+                    </div>
+                `;
+
+                bossGrid.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
