@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор игры | Souls Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #cda052;
+            --dark-gold: #85642a;
+            --bg: #0d0d0d;
+            --card-bg: rgba(18, 18, 18, 0.95);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% 30%, #1a1510 0%, var(--bg) 70%), 
+                              url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            color: #e0e0e0;
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(205, 160, 82, 0.4);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            color: #888;
+            letter-spacing: 1px;
+            margin-bottom: 50px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .game-selector {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 900px;
+            width: 100%;
+        }
+        .game-card {
+            background: var(--card-bg);
+            border: 1px solid #222;
+            border-radius: 8px;
+            overflow: hidden;
+            width: 320px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .game-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--gold);
+            box-shadow: 0 10px 30px rgba(205, 160, 82, 0.2);
+        }
+        .game-card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #1a1a1a;
+            border-bottom: 1px solid #333;
+        }
+        .game-card-info {
+            padding: 20px;
+            text-align: center;
+        }
+        .game-card-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        .game-card-desc {
+            font-size: 0.85rem;
+            color: #aaa;
+            line-height: 1.4;
+        }
+        footer {
+            margin-top: 60px;
+            color: #444;
+            font-size: 0.75rem;
+        }
+/* Шапка профиля */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(127, 168, 201, 0.18);
+            padding-bottom: 30px;
+        }
+        .avatar-wrapper {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            margin-bottom: 15px;
+        }
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--steel);
+            box-shadow: 0 0 25px rgba(127, 168, 201, 0.4), inset 0 0 15px rgba(0, 0, 0, 0.8);
+        }
+        .avatar-frame {
+            position: absolute;
+            top: -8px; left: -8px; right: -8px; bottom: -8px;
+            border: 1px solid var(--deep-blue);
+            border-radius: 50%;
+            animation: rotate 15s linear infinite;
+            opacity: 0.85;
+        }
+
+    </style>
+</head>
+<body>
+
+        <!-- Профиль -->
+        <header class="profile-header">
+            <div class="avatar-wrapper">
+                <div class="avatar-frame"></div>
+                <img src="img/avatar.jpg" alt="Player Avatar" class="avatar">
+            </div>
+            <h1 class="player-name">Nazar (Isshin Killer)</h1>
+        </header>
+
+    <h1>Souls Tracker</h1>
+    <p class="subtitle">Выбери игру, чтобы посмотреть статистику смертей</p>
+
+    <div class="game-selector">
+        <!-- Карточка Elden Ring -->
+        <a href="elden-ring.html" class="game-card">
+            <!-- Замени путь на свою картинку, если нужно -->
+            <img src="img/Elden_Ring_logo.webp" alt="Elden Ring" class="game-card-image" onerror="this.src='https://via.placeholder.com/320x200?text=Elden+Ring'">
+            <div class="game-card-info">
+                <div class="game-card-title">Elden Ring</div>
+                <div class="game-card-desc">Междуземье ждёт. Стань Повелителем Элдена.</div>
+            </div>
+        </a>
+
+        <!-- Карточка Lies of P -->
+        <a href="lies-of-p.html" class="game-card">
+            <img src="img/Lies_of_P_logo.png" alt="Lies of P" class="game-card-image" onerror="this.src='https://via.placeholder.com/320x200?text=Lies+of+P'">
+            <div class="game-card-info">
+                <div class="game-card-title">Lies of P</div>
+                <div class="game-card-desc">Стань человеком. Соври. Выживи в Крате.</div>
+            </div>
+        </a>
+    </div>
+
+    <footer>Кровь, кишки и слёзы казуалов.</footer>
+</body>
+</html>
