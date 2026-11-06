@@ -2,7 +2,7 @@ const MAIN_PLAYER = 'Nazar (Isshin Killer)';
 
 window.GAME_DATA = {
     title: 'Elden Ring',
-    logo: 'img/Elden_Ring.jpg',
+    logo: 'img/Elden_Ring_logo.webp',
     playerName: MAIN_PLAYER,
     footerText: 'Кровь, кишки и слёзы казуалов.',
     victoryText: 'FOE VANQUISHED',
