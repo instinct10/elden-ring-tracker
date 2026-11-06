@@ -3,7 +3,7 @@ window.GAMES = [
         id: 'elden-ring',
         title: 'Elden Ring',
         description: 'Я сосал, меня трахали',
-        logo: 'img/Elden_Ring_logo.webp',
+        logo: 'img/Elden_Ring.jpg',
         accent: '#cda052'
     },
     {
