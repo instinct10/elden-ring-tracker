@@ -10,7 +10,7 @@ window.GAMES = [
         id: 'lies-of-p',
         title: 'Lies of P',
         description: 'Стань человеком. Соври.',
-        logo: 'img/Lies_of_P_logo.png',
+        logo: 'img/lies_of_p.jpg',
         accent: '#7fa8c9'
     },
     {
