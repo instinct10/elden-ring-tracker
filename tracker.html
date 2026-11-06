@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boss Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #cda052;
+            --accent-bright: #e0b866;
+            --deep: #85642a;
+            --bg-color: #0d0d0d;
+            --bg-image: radial-gradient(circle at 50% 30%, #1a1510 0%, #0d0d0d 70%), url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            --card-bg: rgba(18, 18, 18, 0.95);
+            --blood: #a30000;
+            --victory-color: #a30000;
+            --text-main: #e0e0e0;
+            --text-muted: #9aabb8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: var(--bg-image);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 { font-family: 'Cinzel', serif; text-transform: uppercase; letter-spacing: 2px; }
+        a { text-decoration: none; color: inherit; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px 20px; }
+
+        .game-logo-container { display: flex; justify-content: center; margin: 20px 0 30px; }
+        .game-logo {
+            width: 100%; max-width: 350px; height: auto;
+            filter: drop-shadow(0 0 20px color-mix(in srgb, var(--accent) 40%, transparent));
+        }
+
+        .profile-header {
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center; margin-bottom: 30px; padding-bottom: 30px;
+            border-bottom: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+        }
+        .avatar-wrapper { position: relative; width: 130px; height: 130px; margin-bottom: 15px; }
+        .avatar {
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 25px color-mix(in srgb, var(--accent) 45%, transparent), inset 0 0 15px rgba(0,0,0,0.8);
+        }
+        .avatar-frame {
+            position: absolute; top: -8px; left: -8px; right: -8px; bottom: -8px;
+            border: 1px solid var(--deep); border-radius: 50%;
+            animation: rotate 15s linear infinite; opacity: 0.85;
+        }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .player-name {
+            font-size: 2rem; color: var(--accent-bright);
+            text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 50%, transparent);
+            margin-bottom: 5px;
+        }
+        .stats-summary {
+            font-size: 0.95rem; color: var(--text-muted); letter-spacing: 1px;
+            background: color-mix(in srgb, var(--accent) 6%, transparent);
+            padding: 8px 20px; border-radius: 20px;
+            border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+        }
+        .stats-summary strong { color: var(--accent-bright); }
+
+        .back-link {
+            display: inline-block; color: var(--accent); font-size: 0.85rem;
+            letter-spacing: 1px; padding: 4px 10px;
+            border-bottom: 1px dotted var(--deep); transition: color 0.3s;
+        }
+        .back-link:hover { color: var(--accent-bright); }
+
+        .controls-panel {
+            display: flex; justify-content: center; align-items: center;
+            gap: 15px; margin-bottom: 40px; flex-wrap: wrap;
+        }
+        .controls-label { font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--text-muted); letter-spacing: 1px; }
+        .sort-btn {
+            background: color-mix(in srgb, var(--card-bg) 70%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent) 20%, #333);
+            color: var(--text-muted); padding: 8px 16px;
+            font-family: 'Cinzel', serif; font-size: 0.8rem; cursor: pointer;
+            transition: all 0.3s ease; letter-spacing: 1px; border-radius: 4px;
+        }
+        .sort-btn:hover {
+            border-color: var(--accent); color: var(--text-main);
+            box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 25%, transparent);
+        }
+        .sort-btn.active {
+            border-color: var(--accent); color: var(--accent-bright);
+            background: color-mix(in srgb, var(--accent) 10%, transparent);
+            box-shadow: 0 0 15px color-mix(in srgb, var(--accent) 35%, transparent);
+            font-weight: bold;
+        }
+
+        .boss-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+
+        .boss-card {
+            background: var(--card-bg);
+            border: 1px solid color-mix(in srgb, var(--accent) 8%, #1a1a1a);
+            border-radius: 6px; overflow: hidden; position: relative;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            display: flex; flex-direction: column;
+        }
+        .boss-card:hover {
+            transform: translateY(-5px); border-color: var(--accent);
+            box-shadow: 0 5px 25px color-mix(in srgb, var(--accent) 25%, transparent);
+        }
+
+        .boss-link-wrapper { display: block; position: relative; height: 200px; overflow: hidden; }
+        .boss-img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(35%) brightness(0.68) contrast(1.05);
+            transition: transform 0.5s, filter 0.3s;
+        }
+        .boss-card:hover .boss-img { filter: grayscale(0%) brightness(0.95) contrast(1.05); transform: scale(1.05); }
+
+        .boss-info {
+            padding: 20px; display: flex; flex-direction: column; flex-grow: 1;
+            border-top: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+        }
+        .boss-title-link { transition: color 0.3s; }
+        .boss-title-link:hover { color: var(--accent-bright); }
+        .boss-name { font-size: 1.15rem; margin-bottom: 12px; color: var(--text-main); line-height: 1.3; }
+
+        .status-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
+        .status-badge {
+            font-size: 0.75rem; padding: 3px 8px; border-radius: 3px;
+            text-transform: uppercase; font-weight: 600; white-space: nowrap;
+        }
+        .status-defeated {
+            color: var(--blood); border: 1px solid var(--blood);
+            background: color-mix(in srgb, var(--blood) 8%, transparent);
+        }
+        .status-fighting {
+            color: var(--accent); border: 1px solid var(--accent);
+            background: color-mix(in srgb, var(--accent) 8%, transparent);
+        }
+
+        .attempts-list {
+            margin-top: auto; padding-top: 12px;
+            border-top: 1px solid color-mix(in srgb, var(--accent) 8%, #1a1a1a);
+        }
+        .attempt-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px; color: var(--text-muted); }
+        .attempt-row:last-child { margin-bottom: 0; }
+        .attempt-row.primary { color: var(--text-main); }
+        .attempt-row.primary .player-attempts-num {
+            color: var(--accent-bright); font-weight: bold;
+            text-shadow: 0 0 8px color-mix(in srgb, var(--accent) 40%, transparent);
+        }
+
+        .victory-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 200px;
+            display: flex; align-items: center; justify-content: center;
+            background: color-mix(in srgb, var(--victory-color) 22%, transparent);
+            opacity: 0; transition: opacity 0.5s; pointer-events: none; z-index: 2;
+        }
+        .boss-card.is-defeated .victory-overlay { opacity: 1; }
+        .victory-text {
+            color: var(--victory-color);
+            font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: bold;
+            text-shadow: 0 0 15px black;
+            border-top: 2px solid currentColor; border-bottom: 2px solid currentColor;
+            padding: 3px 15px; letter-spacing: 3px; text-align: center;
+        }
+
+        footer { margin-top: 80px; text-align: center; color: var(--text-muted); font-size: 0.8rem; letter-spacing: 1px; }
+
+        @media (max-width: 600px) {
+            .player-name { font-size: 1.6rem; }
+            .boss-grid { grid-template-columns: 1fr; }
+            .game-logo { max-width: 260px; }
+            .sort-btn { padding: 6px 12px; font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 5px;">
+            <a href="index.html" class="back-link">← На главную</a>
+        </div>
+
+        <div class="game-logo-container">
+            <img src="" alt="Logo" class="game-logo" id="game-logo">
+        </div>
+
+        <header class="profile-header">
+            <div class="avatar-wrapper">
+                <div class="avatar-frame"></div>
+                <img src="img/avatar.jpg" alt="Player Avatar" class="avatar">
+            </div>
+            <h1 class="player-name" id="player-name">Player</h1>
+            <div class="stats-summary" id="stats-summary">Загрузка...</div>
+        </header>
+
+        <div class="controls-panel">
+            <span class="controls-label">Сортировка:</span>
+            <button class="sort-btn active" onclick="changeSort('default', this)">По порядку</button>
+            <button class="sort-btn" onclick="changeSort('desc', this)">Сначала сложные (▲)</button>
+            <button class="sort-btn" onclick="changeSort('asc', this)">Сначала легкие (▼)</button>
+        </div>
+
+        <main class="boss-grid" id="boss-grid"></main>
+        <footer><p id="footer-text"></p></footer>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const gameId = params.get('game');
+        if (!gameId) window.location.href = 'index.html';
+
+        let currentSortMode = 'default';
+
+        const scriptEl = document.createElement('script');
+        scriptEl.src = `games/${gameId}.js`;
+        scriptEl.onload = init;
+        scriptEl.onerror = () => {
+            document.body.innerHTML = '<p style="text-align:center;padding:50px;color:#888;">Игра не найдена. <a href="index.html" style="color:#cda052;">← На главную</a></p>';
+        };
+        document.head.appendChild(scriptEl);
+
+        function init() {
+            const data = window.GAME_DATA;
+            if (!data) return;
+
+            document.title = `${data.title} | Boss Tracker`;
+            Object.entries(data.theme || {}).forEach(([k, v]) => document.documentElement.style.setProperty(k, v));
+
+            // Цвет надписи победы
+            const victoryColor = data.victoryColor || data.theme['--blood'] || '#a30000';
+            document.documentElement.style.setProperty('--victory-color', victoryColor);
+
+            document.getElementById('game-logo').src = data.logo;
+            document.getElementById('game-logo').alt = data.title;
+            document.getElementById('player-name').textContent = data.playerName || 'Player';
+            document.getElementById('footer-text').textContent = data.footerText || '';
+
+            calculateStats();
+            renderBosses();
+        }
+
+        function calculateStats() {
+            const data = window.GAME_DATA;
+            let totalDefeated = 0, totalAttempts = 0;
+            data.bosses.forEach(b => {
+                if (b.defeated) totalDefeated++;
+                const val = b.attempts[data.playerName];
+                if (val) totalAttempts += val;
+            });
+            document.getElementById('stats-summary').innerHTML =
+                `Побеждено боссов: <strong>${totalDefeated} / ${data.bosses.length}</strong> | Всего попыток: <strong>${totalAttempts}</strong>`;
+        }
+
+        function changeSort(mode, el) {
+            document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            currentSortMode = mode;
+            renderBosses();
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        function renderBosses() {
+            const data = window.GAME_DATA;
+            const grid = document.getElementById('boss-grid');
+            grid.innerHTML = '';
+
+            let list = [...data.bosses];
+            const key = data.playerName;
+            if (currentSortMode === 'desc') list.sort((a, b) => (b.attempts[key] || 0) - (a.attempts[key] || 0));
+            if (currentSortMode === 'asc')  list.sort((a, b) => (a.attempts[key] || 0) - (b.attempts[key] || 0));
+
+            const victoryText = data.victoryText || 'FOE VANQUISHED';
+
+            list.forEach(boss => {
+                const card = document.createElement('div');
+                card.className = `boss-card ${boss.defeated ? 'is-defeated' : ''}`;
+
+                let attemptsHTML = '';
+                for (const [player, count] of Object.entries(boss.attempts)) {
+                    const isPrimary = player === key ? 'primary' : '';
+                    attemptsHTML += `<div class="attempt-row ${isPrimary}"><span>${escapeHtml(player)}:</span><span class="player-attempts-num">${count}</span></div>`;
+                }
+
+                const fallback = `https://via.placeholder.com/320x200/1a1a1a/888?text=${encodeURIComponent(boss.name.split('(')[0].trim())}`;
+
+                card.innerHTML = `
+                    <a href="${boss.link}" target="_blank" class="boss-link-wrapper" title="Узнать больше о ${escapeHtml(boss.name)}">
+                        <div class="victory-overlay"><div class="victory-text">${escapeHtml(victoryText)}</div></div>
+                        <img src="${boss.img}" alt="${escapeHtml(boss.name)}" class="boss-img" onerror="this.src='${fallback}'">
+                    </a>
+                    <div class="boss-info">
+                        <div class="status-header">
+                            <a href="${boss.link}" target="_blank" class="boss-title-link"><h3 class="boss-name">${escapeHtml(boss.name)}</h3></a>
+                            <span class="status-badge ${boss.defeated ? 'status-defeated' : 'status-fighting'}">
+                                ${boss.defeated ? 'Побежден' : 'В бою'}
+                            </span>
+                        </div>
+                        <div class="attempts-list">${attemptsHTML}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
