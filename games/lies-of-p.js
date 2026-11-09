@@ -23,22 +23,22 @@ window.GAME_DATA = {
                 name: "Командующий парадом (Parade Master)",
                 img: "img/lop_parade_master.jpg",
                 link: "https://liesofp.wiki.fextralife.com/Parade+Master",
-                defeated: false,
-                attempts: { [MAIN_PLAYER]: 0 }
+                defeated: true,
+                attempts: { [MAIN_PLAYER]: 2 }
             },
             {
                 name: "Безумный осёл (Mad Donkey)",
                 img: "img/lop_mad_donkey.jpg",
                 link: "https://liesofp.wiki.fextralife.com/Mad+Donkey",
-                defeated: false,
-                attempts: { [MAIN_PLAYER]: 0 }
+                defeated: true,
+                attempts: { [MAIN_PLAYER]: 1 }
             },
             {
                 name: "Бракованный смотритель (Scrapped Watchman)",
                 img: "img/lop_scrapped_watchman.jpg",
                 link: "https://liesofp.wiki.fextralife.com/Scrapped+Watchman",
-                defeated: false,
-                attempts: { [MAIN_PLAYER]: 0 }
+                defeated: true,
+                attempts: { [MAIN_PLAYER]: 8 }
             },
             {
                 name: "Марионетка будущего (Puppet of the Future)",
