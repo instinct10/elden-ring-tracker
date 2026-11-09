@@ -2,7 +2,7 @@ const MAIN_PLAYER = 'Nazar (Isshin Killer)';
 
 window.GAME_DATA = {
     title: 'Lies of P',
-    logo: 'img/lies_of_p-logo.png',
+    logo: 'img/lies_of_p_logo.png',
     playerName: MAIN_PLAYER,
     footerText: 'Ложь во спасение. Правда — во тьме.',
     victoryText: 'ELIMINATED',
