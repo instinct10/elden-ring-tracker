@@ -2,7 +2,7 @@ const MAIN_PLAYER = 'Nazar (Isshin Killer)';
 
 window.GAME_DATA = {
     title: 'Lies of P',
-    logo: 'img/lies_of_p_logo.png',
+    logo: 'img/Lies_of_P_logo.png',
     playerName: MAIN_PLAYER,
     footerText: 'Ложь во спасение. Правда — во тьме.',
     victoryText: 'ELIMINATED',
@@ -44,8 +44,8 @@ window.GAME_DATA = {
                 name: "Марионетка будущего (Puppet of the Future)",
                 img: "img/lop_puppet_of_the_future.jpg",
                 link: "https://liesofp.wiki.fextralife.com/Puppet+of+the+Future",
-                defeated: false,
-                attempts: { [MAIN_PLAYER]: 0 }
+                defeated: true,
+                attempts: { [MAIN_PLAYER]: 1 }
             },
             {
                 name: "Выживший (Survivor)",
@@ -58,22 +58,22 @@ window.GAME_DATA = {
                 name: "Фуоко, Пламя Короля (King's Flame, Fuoco)",
                 img: "img/lop_king_flame_fuoco.jpg",
                 link: "https://liesofp.wiki.fextralife.com/King's+Flame,+Fuoco",
-                defeated: false,
-                attempts: { [MAIN_PLAYER]: 0 }
+                defeated: true,
+                attempts: { [MAIN_PLAYER]: 4 }
             },
             {
                 name: "Искупительница (The Atoned)",
                 img: "img/lop_the_atoned.jpg",
                 link: "https://liesofp.wiki.fextralife.com/The+Atoned",
-                defeated: false,
-                attempts: { [MAIN_PLAYER]: 0 }
+                defeated: true,
+                attempts: { [MAIN_PLAYER]: 4 }
             },
             {
                 name: "Падший архиепископ Андреус (Fallen Archbishop Andreus)",
                 img: "img/lop_fallen_archbishop_andreus.jpg",
                 link: "https://liesofp.wiki.fextralife.com/Fallen+Archbishop+Andreus",
                 defeated: false,
-                attempts: { [MAIN_PLAYER]: 0 }
+                attempts: { [MAIN_PLAYER]: 14 }
             },
             {
                 name: "Старейшина братства чёрного кролика (Eldest of the Black Rabbit Brotherhood)",
