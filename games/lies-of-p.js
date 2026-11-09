@@ -24,7 +24,7 @@ window.GAME_DATA = {
                 img: "img/lop_parade_master.jpg",
                 link: "https://liesofp.wiki.fextralife.com/Parade+Master",
                 defeated: true,
-                attempts: { [MAIN_PLAYER]: 2 }
+                attempts: { [MAIN_PLAYER]: 3 }
             },
             {
                 name: "Безумный осёл (Mad Donkey)",
